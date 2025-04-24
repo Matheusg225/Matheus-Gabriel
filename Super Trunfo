@@ -1,0 +1,91 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h> // Para atof() e atoi()
+
+// Definição da estrutura para armazenar os dados de uma cidade (carta)
+typedef struct {
+    char estado[3];         // Ex: MG, SP, RJ
+    int codigo;             // Código único da cidade
+    char nomeCidade[100];   // Nome da cidade
+    long long populacao;    // População da cidade
+    double pib;             // Produto Interno Bruto (em milhões de reais)
+    double area;            // Área da cidade (em km²)
+    int numPontosTuristicos; // Número de pontos turísticos
+
+    // Propriedades derivadas
+    double densidadePopulacional; // Habitantes por km²
+    double pibPerCapita;        // PIB por habitante (em reais)
+} CartaCidade;
+
+// Função para calcular a densidade populacional
+double calcularDensidadePopulacional(long long populacao, double area) {
+    if (area > 0) {
+        return (double)populacao / area;
+    } else {
+        return 0.0; // Evita divisão por zero
+    }
+}
+
+// Função para calcular o PIB per capita
+double calcularPibPerCapita(double pib, long long populacao) {
+    if (populacao > 0) {
+        return (pib * 1000000.0) / populacao; // Multiplica PIB por 1 milhão para converter para reais
+    } else {
+        return 0.0; // Evita divisão por zero
+    }
+}
+
+// Função para registrar os dados de uma carta de cidade
+void registrarCarta(CartaCidade *carta) {
+    printf("--- Registrar Nova Carta de Cidade ---\n");
+
+    printf("Estado (Ex: MG): ");
+    scanf("%2s", carta->estado); // Limita a leitura a 2 caracteres + '\0'
+
+    printf("Código da Cidade: ");
+    scanf("%d", &carta->codigo);
+
+    printf("Nome da Cidade: ");
+    scanf(" %[^\n]", carta->nomeCidade); // Lê a linha inteira, incluindo espaços
+
+    printf("População: ");
+    scanf("%lld", &carta->populacao);
+
+    printf("PIB (em milhões de R$): ");
+    scanf("%lf", &carta->pib);
+
+    printf("Área (em km²): ");
+    scanf("%lf", &carta->area);
+
+    printf("Número de Pontos Turísticos: ");
+    scanf("%d", &carta->numPontosTuristicos);
+
+    // Calcular propriedades derivadas
+    carta->densidadePopulacional = calcularDensidadePopulacional(carta->populacao, carta->area);
+    carta->pibPerCapita = calcularPibPerCapita(carta->pib, carta->populacao);
+
+    printf("\nCarta da Cidade registrada com sucesso!\n");
+}
+
+// Função para exibir os detalhes de uma carta de cidade
+void exibirCarta(const CartaCidade *carta) {
+    printf("\n--- Detalhes da Carta da Cidade ---\n");
+    printf("Estado: %s\n", carta->estado);
+    printf("Código: %d\n", carta->codigo);
+    printf("Nome da Cidade: %s\n", carta->nomeCidade);
+    printf("População: %lld\n", carta->populacao);
+    printf("PIB: %.2f milhões de R$\n", carta->pib);
+    printf("Área: %.2f km²\n", carta->area);
+    printf("Número de Pontos Turísticos: %d\n", carta->numPontosTuristicos);
+    printf("Densidade Populacional: %.2f hab/km²\n", carta->densidadePopulacional);
+    printf("PIB Per Capita: R$ %.2f\n", carta->pibPerCapita);
+}
+
+int main() {
+    CartaCidade carta;
+
+    registrarCarta(&carta);
+    exibirCarta(&carta);
+
+    return 0;
+}
