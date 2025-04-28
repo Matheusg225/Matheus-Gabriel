@@ -1,0 +1,119 @@
+#include <stdio.h>
+
+// Funções para o movimento de cada peça
+void moverTorreRecursivo(int casas, char direcao);
+void moverBispoRecursivo(int casas, char direcao_vertical, char direcao_horizontal);
+void moverRainhaRecursivo(int casas, char direcao);
+void moverCavaloComplexo();
+void moverBispoLoops();
+
+int main() {
+    printf("Movimento da Torre (Recursivo):\n");
+    moverTorreRecursivo(5, 'c'); // Move 5 casas para cima
+    printf("\n");
+
+    printf("Movimento do Bispo (Recursivo):\n");
+    moverBispoRecursivo(3, 'c', 'd'); // Move 3 casas na diagonal (cima-direita)
+    printf("\n");
+
+    printf("Movimento da Rainha (Recursivo):\n");
+    moverRainhaRecursivo(4, 'e'); // Move 4 casas para a esquerda
+    printf("\n");
+
+    printf("Movimento do Cavalo (Loops Complexos):\n");
+    moverCavaloComplexo();
+    printf("\n");
+
+    printf("Movimento do Bispo (Loops Aninhados):\n");
+    moverBispoLoops();
+    printf("\n");
+
+    return 0;
+}
+
+// Implementações das funções de movimento abaixo...
+
+void moverTorreRecursivo(int casas, char direcao) {
+    if (casas <= 0) {
+        return;
+    }
+    if (direcao == 'c') {
+        printf("Cima\n");
+    } else if (direcao == 'b') {
+        printf("Baixo\n");
+    } else if (direcao == 'e') {
+        printf("Esquerda\n");
+    } else if (direcao == 'd') {
+        printf("Direita\n");
+    }
+    moverTorreRecursivo(casas - 1, direcao);
+}
+
+void moverBispoRecursivo(int casas, char direcao_vertical, char direcao_horizontal) {
+    if (casas <= 0) {
+        return;
+    }
+    if (direcao_vertical == 'c' && direcao_horizontal == 'd') {
+        printf("Cima-Direita\n");
+    } else if (direcao_vertical == 'c' && direcao_horizontal == 'e') {
+        printf("Cima-Esquerda\n");
+    } else if (direcao_vertical == 'b' && direcao_horizontal == 'd') {
+        printf("Baixo-Direita\n");
+    } else if (direcao_vertical == 'b' && direcao_horizontal == 'e') {
+        printf("Baixo-Esquerda\n");
+    }
+    moverBispoRecursivo(casas - 1, direcao_vertical, direcao_horizontal);
+}
+
+void moverRainhaRecursivo(int casas, char direcao) {
+    if (casas <= 0) {
+        return;
+    }
+    if (direcao == 'c') {
+        printf("Cima\n");
+    } else if (direcao == 'b') {
+        printf("Baixo\n");
+    } else if (direcao == 'e') {
+        printf("Esquerda\n");
+    } else if (direcao == 'd') {
+        printf("Direita\n");
+    } else if (direcao == 's' && direcao == 'd') {
+        printf("Cima-Direita\n");
+    } else if (direcao == 's' && direcao == 'e') {
+        printf("Cima-Esquerda\n");
+    } else if (direcao == 'i' && direcao == 'd') {
+        printf("Baixo-Direita\n");
+    } else if (direcao == 'i' && direcao == 'e') {
+        printf("Baixo-Esquerda\n");
+    }
+    moverRainhaRecursivo(casas - 1, direcao);
+}
+
+void moverCavaloComplexo() {
+    for (int cima = 1; cima <= 2; cima++) {
+        for (int direita = 1; direita <= 1; direita++) {
+            if (cima == 2 && direita == 1) {
+                printf("Cima\n");
+                printf("Cima-Direita\n");
+            }
+        }
+    }
+}
+
+void moverBispoLoops() {
+    for (int vertical = -3; vertical <= 3; vertical++) {
+        for (int horizontal = -3; horizontal <= 3; horizontal++) {
+            if (abs(vertical) == abs(horizontal) && vertical != 0 && horizontal != 0) {
+                if (vertical > 0 && horizontal > 0) {
+                    printf("Cima-Direita\n");
+                } else if (vertical > 0 && horizontal < 0) {
+                    printf("Cima-Esquerda\n");
+                } else if (vertical < 0 && horizontal > 0) {
+                    printf("Baixo-Direita\n");
+                } else if (vertical < 0 && horizontal < 0) {
+                    printf("Baixo-Esquerda\n");
+                }
+            }
+        }
+    }
+}
