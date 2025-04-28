@@ -1,0 +1,213 @@
+#include <stdio.h>
+
+// Definições de constantes
+#define TAMANHO_TABULEIRO 10
+#define TAMANHO_CONE 5
+#define TAMANHO_CRUZ 5
+#define TAMANHO_OCTAEDRO 5
+
+// Funções para criar as matrizes de habilidade
+void criarCone(int cone[TAMANHO_CONE][TAMANHO_CONE]) {
+    int centro = TAMANHO_CONE / 2;
+    for (int i = 0; i < TAMANHO_CONE; i++) {
+        for (int j = 0; j < TAMANHO_CONE; j++) {
+            if (i >= centro && j >= centro - i + centro && j <= centro + i - centro) {
+                cone[i][j] = 1;
+            } else {
+                cone[i][j] = 0;
+            }
+        }
+    }
+}
+
+void criarCruz(int cruz[TAMANHO_CRUZ][TAMANHO_CRUZ]) {
+    int centro = TAMANHO_CRUZ / 2;
+    for (int i = 0; i < TAMANHO_CRUZ; i++) {
+        for (int j = 0; j < TAMANHO_CRUZ; j++) {
+            if (i == centro || j == centro) {
+                cruz[i][j] = 1;
+            } else {
+                cruz[i][j] = 0;
+            }
+        }
+    }
+}
+
+void criarOctaedro(int octaedro[TAMANHO_OCTAEDRO][TAMANHO_OCTAEDRO]) {
+    int centro = TAMANHO_OCTAEDRO / 2;
+    for (int i = 0; i < TAMANHO_OCTAEDRO; i++) {
+        for (int j = 0; j < TAMANHO_OCTAEDRO; j++) {
+            if (abs(i - centro) + abs(j - centro) <= centro) {
+                octaedro[i][j] = 1;
+            } else {
+                octaedro[i][j] = 0;
+            }
+        }
+    }
+}
+
+// Função para exibir o tabuleiro
+void exibirTabuleiro(int tabuleiro[TAMANHO_TABULEIRO][TAMANHO_TABULEIRO]) {
+    printf("  0 1 2 3 4 5 6 7 8 9\n");
+    for (int i = 0; i < TAMANHO_TABULEIRO; i++) {
+        printf("%d ", i);
+        for (int j = 0; j < TAMANHO_TABULEIRO; j++) {
+            switch (tabuleiro[i][j]) {
+                case 0:
+                    printf(". "); // Água
+                    break;
+                case 3:
+                    printf("# "); // Navio
+                    break;
+                case 5:
+                    printf("* "); // Área afetada pela habilidade
+                    break;
+                default:
+                    printf("? "); // Erro
+                    break;
+            }
+        }
+        printf("\n");
+    }
+    printf("\n");
+}
+
+// Função para aplicar a habilidade ao tabuleiro
+void aplicarHabilidade(int tabuleiro[TAMANHO_TABULEIRO][TAMANHO_TABULEIRO], int habilidade[TAMANHO_CONE][TAMANHO_CONE], int linhaOrigem, int colunaOrigem, int tamanhoHabilidade) {
+    int centroHabilidade = tamanhoHabilidade / 2;
+    for (int i = 0; i < tamanhoHabilidade; i++) {
+        for (int j = 0; j < tamanhoHabilidade; j++) {
+            if (habilidade[i][j] == 1) {
+                int linhaTabuleiro = linhaOrigem - centroHabilidade + i;
+                int colunaTabuleiro = colunaOrigem - centroHabilidade + j;
+                if (linhaTabuleiro >= 0 && linhaTabuleiro < TAMANHO_TABULEIRO && colunaTabuleiro >= 0 && colunaTabuleiro < TAMANHO_TABULEIRO) {
+                    if (tabuleiro[linhaTabuleiro][colunaTabuleiro] != 3) { // Não sobrescrever navios
+                        tabuleiro[linhaTabuleiro][colunaTabuleiro] = 5;
+                    }
+                }
+            }
+        }
+    }
+}
+
+int main() {
+    // Inicialização do tabuleiro
+    int tabuleiro[TAMANHO_TABULEIRO][TAMANHO_TABULEIRO] = {
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 3, 3, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 3, 3, 3, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0, 3, 0},
+        {0, 0, 3, 0, 0, 0, 0, 0, 3, 0},
+        {0, 0, 3, 0, 0, 0, 0, 0, 3, 0},
+        {0, 0, 0, 0, 3, 3, 3, 0, 0, 0},
+        {0, 3, 3, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 3, 3, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+    };
+
+    // Criação das matrizes de habilidade
+    int cone[TAMANHO_CONE][TAMANHO_CONE] = {0};
+    int cruz[TAMANHO_CRUZ][TAMANHO_CRUZ] = {0};
+    int octaedro[TAMANHO_OCTAEDRO][TAMANHO_OCTAEDRO] = {0};
+
+    criarCone(cone);
+    criarCruz(cruz);
+    criarOctaedro(octaedro);
+
+    // Ponto de origem para as habilidades (definido diretamente no código)
+    int linhaOrigemCone = 2;
+    int colunaOrigemCone = 2;
+    int linhaOrigemCruz = 4;
+    int colunaOrigemCruz = 4;
+    int linhaOrigemOctaedro = 7;
+    int colunaOrigemOctaedro = 7;
+
+    // Aplicação das habilidades ao tabuleiro
+    printf("Tabuleiro original:\n");
+    exibirTabuleiro(tabuleiro);
+
+    // Resetar o tabuleiro para aplicar a próxima habilidade
+    int tabuleiroCone[TAMANHO_TABULEIRO][TAMANHO_TABULEIRO];
+    for (int i = 0; i < TAMANHO_TABULEIRO; i++) {
+        for (int j = 0; j < TAMANHO_TABULEIRO; j++) {
+            tabuleiroCone[i][j] = tabuleiro[i][j];
+        }
+    }
+    aplicarHabilidade(tabuleiroCone, cone, linhaOrigemCone, colunaOrigemCone, TAMANHO_CONE);
+    printf("Tabuleiro com habilidade Cone aplicada em (%d, %d):\n", linhaOrigemCone, colunaOrigemCone);
+    exibirTabuleiro(tabuleiroCone);
+
+    // Resetar o tabuleiro para aplicar a próxima habilidade
+    int tabuleiroCruz[TAMANHO_TABULEIRO][TAMANHO_TABULEIRO];
+    for (int i = 0; i < TAMANHO_TABULEIRO; i++) {
+        for (int j = 0; j < TAMANHO_TABULEIRO; j++) {
+            tabuleiroCruz[i][j] = tabuleiro[i][j];
+        }
+    }
+    aplicarHabilidade(tabuleiroCruz, cruz, linhaOrigemCruz, colunaOrigemCruz, TAMANHO_CRUZ);
+    printf("Tabuleiro com habilidade Cruz aplicada em (%d, %d):\n", linhaOrigemCruz, colunaOrigemCruz);
+    exibirTabuleiro(tabuleiroCruz);
+
+    // Resetar o tabuleiro para aplicar a próxima habilidade
+    int tabuleiroOctaedro[TAMANHO_TABULEIRO][TAMANHO_TABULEIRO];
+    for (int i = 0; i < TAMANHO_TABULEIRO; i++) {
+        for (int j = 0; j < TAMANHO_TABULEIRO; j++) {
+            tabuleiroOctaedro[i][j] = tabuleiro[i][j];
+        }
+    }
+    aplicarHabilidade(tabuleiroOctaedro, octaedro, linhaOrigemOctaedro, colunaOrigemOctaedro, TAMANHO_OCTAEDRO);
+    printf("Tabuleiro com habilidade Octaedro aplicada em (%d, %d):\n", linhaOrigemOctaedro, colunaOrigemOctaedro);
+    exibirTabuleiro(tabuleiroOctaedro);
+
+    return 0;
+}
+
+/*
+Documentação:
+
+Este programa em C implementa a lógica para representar habilidades especiais com áreas de efeito distintas em um jogo de Batalha Naval, construindo sobre o tabuleiro 10x10 criado em níveis anteriores.
+
+1. Definição do Tabuleiro:
+   - Uma matriz bidimensional chamada `tabuleiro` de tamanho 10x10 é inicializada com valores representando a água (0) e os navios (3).
+
+2. Criação de Matrizes de Habilidade:
+   - Três funções (`criarCone`, `criarCruz`, `criarOctaedro`) são definidas para criar matrizes bidimensionais que representam as áreas de efeito de cada habilidade.
+   - Cada matriz de habilidade utiliza os valores 0 e 1 para indicar as posições não afetadas e afetadas, respectivamente.
+   - `criarCone`: A área em forma de cone é criada iterando pela matriz e definindo as células dentro da forma do cone como 1, com o vértice no centro superior. A condição `i >= centro && j >= centro - i + centro && j <= centro + i - centro` define essa forma.
+   - `criarCruz`: A área em forma de cruz é criada marcando como 1 a linha e a coluna central da matriz. A condição `i == centro || j == centro` define essa forma.
+   - `criarOctaedro`: A área em forma de octaedro (losango) é criada marcando como 1 as células cuja distância de Manhattan até o centro da matriz é menor ou igual ao raio (metade do tamanho). A condição `abs(i - centro) + abs(j - centro) <= centro` define essa forma.
+
+3. Integração de Habilidades ao Tabuleiro:
+   - Pontos de origem (`linhaOrigemCone`, `colunaOrigemCone`, etc.) são definidos para cada habilidade no tabuleiro. Estes pontos representam o centro da área de efeito da habilidade.
+   - A função `aplicarHabilidade` recebe o tabuleiro, a matriz de habilidade, as coordenadas de origem e o tamanho da habilidade.
+   - Dentro de `aplicarHabilidade`, loops aninhados iteram pela matriz de habilidade. Se uma célula na matriz de habilidade tem o valor 1, as coordenadas correspondentes no tabuleiro são calculadas, considerando o ponto de origem da habilidade.
+   - Uma verificação de limites garante que a área de efeito da habilidade permaneça dentro dos limites do tabuleiro.
+   - As posições do tabuleiro que estão dentro da área de efeito da habilidade são marcadas com o valor 5, a menos que já contenham um navio (valor 3).
+
+4. Exibição do Tabuleiro com Habilidade:
+   - A função `exibirTabuleiro` utiliza loops aninhados e `printf` para exibir o estado atual do tabuleiro no console.
+   - Diferentes caracteres são usados para representar a água (.), o navio (#) e a área afetada pela habilidade (*).
+
+5. Utilização de Condicionais:
+   - As matrizes de habilidades são construídas dinamicamente dentro das funções `criarCone`, `criarCruz` e `criarOctaedro` utilizando condicionais (`if-else`) dentro de loops aninhados para determinar se uma célula pertence à área de efeito da habilidade.
+   - A sobreposição das habilidades no tabuleiro também utiliza condicionais (`if`) para verificar os limites do tabuleiro e para não sobrescrever a representação dos navios.
+
+Requisitos Funcionais Atendidos:
+- O programa cria as matrizes de efeito para as habilidades Cone, Cruz e Octaedro.
+- As matrizes de habilidade utilizam os valores 0 e 1 para indicar as áreas não afetadas e afetadas.
+- O programa define um ponto de origem para cada habilidade no código.
+- O programa sobrepõe as matrizes de habilidade ao tabuleiro, marcando as áreas afetadas com o valor 5.
+- A saída do programa exibe o tabuleiro com os navios e as áreas de efeito das habilidades, utilizando diferentes caracteres.
+- A construção das matrizes de habilidade e a sobreposição no tabuleiro utilizam estruturas de repetição aninhadas (`for` loops) e condicionais (`if` statements).
+
+Requisitos Não Funcionais Atendidos:
+- Performance: O programa executa de forma eficiente para o tamanho do tabuleiro e das matrizes de habilidade definidos.
+- Documentação: O código contém comentários explicando a lógica de cada parte do programa, incluindo como as áreas de efeito das habilidades são calculadas.
+- Legibilidade: O código está bem formatado, com nomes de variáveis descritivos e indentação consistente, facilitando a compreensão.
+
+Simplificações para o Nível Avançado:
+- A posição das habilidades no tabuleiro é definida diretamente no código.
+- Não há implementação de lógica de dano ou efeito das habilidades nos navios.
+- O tamanho das matrizes de habilidade é fixo.
+- A validação de limites do tabuleiro durante a sobreposição da habilidade é feita com condicionais simples.
+*/
